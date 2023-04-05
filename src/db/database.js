@@ -25,6 +25,20 @@ export class Databasse {
     return tasks;
   }
 
+  update(table, id, data){
+    const { title, description } = data
+    const indexTask = this.#database[table].findIndex(task => task.id === id);
+
+    if (indexTask !== -1){
+      let task = this.#database[table][indexTask];
+      const newTask = { ...task, id, title, description, updated_at: new Date()}
+      this.#database[table][indexTask] = newTask
+      this.#persist()
+    }else {
+      console.log("Não foi possível atualizar o seu dados.")
+    }
+  } 
+
   insert(table, data){
     if (Array.isArray(this.#database[table])){
 			this.#database[table].push(data)

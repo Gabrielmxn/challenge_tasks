@@ -1,11 +1,12 @@
-import { Databasse } from "./database.js"
+import { Databasse } from "../db/database.js"
 import { randomUUID } from 'node:crypto'
+import { buildRoutePath } from "../utils/build-route-path.js";
 const database = new Databasse();
 
 export const routes = [
   {
     method: 'GET',
-    path: '/tasks',
+    path: buildRoutePath('/tasks'),
     handler: (req, res) => {
       const tasks = database.select('tasks');
       return res.end(JSON.stringify(tasks))
@@ -13,7 +14,7 @@ export const routes = [
   },
   {
     method: 'POST',
-    path: '/tasks',
+    path: buildRoutePath('/tasks'),
     handler: (req, res) => {
       const { 
         title, 
@@ -36,28 +37,41 @@ export const routes = [
   },
   {
     method: 'PUT',
-    path: '/tasks/:id',
+    path: buildRoutePath('/tasks/:id'),
     handler: (req, res) => {
-      return res.end('PUT')
+      const { id } = req.params
+      const { 
+        title, 
+        description
+      } = req.body;
+
+      const task = database.update('tasks', id, {
+        title,
+        description
+      })
+      return res.writeHead(204).end(JSON.stringify({
+        title,
+        description
+      }))
     }
   },
   {
     method: 'DELETE',
-    path: '/tasks/:id',
+    path: buildRoutePath('/tasks/:id'),
     handler: (req, res) => {
       return res.end('DELETE')
     }
   },
   {
     method: 'PATCH',
-    path: '/tasks/:id/complete',
+    path: buildRoutePath('/tasks/:id/complete'),
     handler: (req, res) => {
       return res.end('PATCH')
     }
   },
   {
     method: 'POST',
-    path: '/tasks/import',
+    path: buildRoutePath('/tasks/import'),
     handler: (req, res) => {
       return res.end('import')
     }
