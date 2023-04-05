@@ -50,6 +50,27 @@ export class Databasse {
     this.#persist();
     return data;
   }
+  delete(table, id){
+    const indexTask = this.#database[table].findIndex(task => task.id === id);
+    if (indexTask !== -1){
+      this.#database[table].splice(indexTask, 1)
+      this.#persist()
+    }else {
+      console.log("Não foi possível encontrar o usuário.")
+    }
+  }
+  completedTask(table, id){
+    const indexTask = this.#database[table].findIndex(task => task.id === id);
+
+    if (indexTask !== -1){
+      let task = this.#database[table][indexTask];
+      const newTask = { ...task, completed_at: new Date()}
+      this.#database[table][indexTask] = newTask
+      this.#persist()
+    }else {
+      console.log("Não foi possível atualizar o seu dados.")
+    }
+  }
 
   
 }
