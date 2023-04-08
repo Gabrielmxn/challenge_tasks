@@ -35,7 +35,7 @@ export class Databasse {
       this.#database[table][indexTask] = newTask
       this.#persist()
     }else {
-      console.log("Não foi possível atualizar o seu dados.")
+      throw new Error("Usuário não encontrado.")
     }
   } 
 
@@ -46,7 +46,7 @@ export class Databasse {
 			this.#database[table] = [data]
 		}
 
-    console.log(data)
+
     this.#persist();
     return data;
   }
@@ -56,7 +56,7 @@ export class Databasse {
       this.#database[table].splice(indexTask, 1)
       this.#persist()
     }else {
-      console.log("Não foi possível encontrar o usuário.")
+      throw new Error("Usuário não encontrado.")
     }
   }
   completedTask(table, id){
@@ -68,7 +68,7 @@ export class Databasse {
       this.#database[table][indexTask] = newTask
       this.#persist()
     }else {
-      console.log("Não foi possível atualizar o seu dados.")
+     throw new Error("Usuário não encontrado.")
     }
   }
 
