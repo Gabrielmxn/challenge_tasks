@@ -1,38 +1,31 @@
-import fs from 'node:fs/promises'
+import fs from 'node:fs'
+import { parse } from 'csv-parse'
 import multer from 'multer';
 
 const upload = multer({ dest: 'upload/' })
 
 export async function ImportCsv(req, res) {
-  upload.single('file')(req, res, async function (error) {
+  upload.single('file')(req, res, function (error) {
     const urlCsv = new URL(`../../upload/${req.file.filename}`, import.meta.url)
     if (error) {
       res.writeHead(404).end("Não foi possível carregar o arquivo")
     }
+    const file = fs.createReadStream(urlCsv)
 
-    const file = await fs.readFile(urlCsv)
+    const parseFile = parse();
 
-    const tasks = file.toString()
-      .split(',')
-      .toString()
-      .split('\r\n')
-      .slice(2)
-      .map(task => {
-        const [title, description] = task.split(',')
-        return {
-          title, description
-        }
-      })
+    file.pipe(parseFile);
 
-    tasks.map(({ title, description }) => {
-      fetch('http://localhost:3333/tasks', {
-        method: 'POST',
-        body: JSON.stringify({ title, description }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-    })
+    parseFile.on("data", async ([title, description]) => {
+      if(title !== 'title' && description !== 'description'){
+        fetch("http://localhost:3333/tasks", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json'},
+          body: JSON.stringify({title, description})
+        })
+      }
+    });
+   
     res.writeHead(204).end()
   })
 
